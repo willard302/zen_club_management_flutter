@@ -1,0 +1,1 @@
+ /Users/nicowu/Projects/club_ledger_app/build/5acbb4bb885433609a88efc2ac772ee4/dart_build_result.json:  /Users/nicowu/Projects/club_ledger_app/.dart_tool/package_config.json /Users/nicowu/Projects/club_ledger_app/pubspec.yaml /opt/homebrew/share/flutter/bin/cache/dart-sdk/version
