@@ -10,8 +10,8 @@ class MeditationSession {
 }
 
 class TimerProvider with ChangeNotifier {
-  static const int _defaultDurationSeconds = 25 * 60; // 25 minutes
-  int _remainingSeconds = _defaultDurationSeconds;
+  int _defaultDurationSeconds = 25 * 60; // 25 minutes
+  int _remainingSeconds = 25 * 60;
   bool _isRunning = false;
   Timer? _timer;
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -34,6 +34,17 @@ class TimerProvider with ChangeNotifier {
     } else {
       _startTimer();
     }
+  }
+
+  void setTimer(int minutes, int seconds) {
+    if (_isRunning) _pauseTimer();
+    _defaultDurationSeconds = minutes * 60 + seconds;
+    _remainingSeconds = _defaultDurationSeconds;
+    notifyListeners();
+  }
+
+  Duration getTotalMeditationTime() {
+    return _history.fold(Duration.zero, (prev, session) => prev + session.duration);
   }
 
   void _startTimer() {

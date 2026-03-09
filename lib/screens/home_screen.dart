@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/timer_provider.dart';
+import 'package:app/screens/statistics_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,7 +23,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _buildHeader(),
+                    _buildHeader(context),
                     _buildTimerContent(context),
                     const SizedBox(height: 100), 
                   ],
@@ -72,7 +73,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
       child: Row(
@@ -103,7 +104,10 @@ class HomeScreen extends StatelessWidget {
               onSelected: (value) {
                 // Handle menu selection here
                 if (value == 'record') {
-                  // Navigate to Zen Record
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const StatisticsScreen()),
+                  );
                 } else if (value == 'settings') {
                   // Navigate to Sound Settings
                 }
@@ -138,25 +142,13 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderIcon(IconData icon) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: Colors.white),
-    );
-  }
-
   Widget _buildTimerContent(BuildContext context) {
     return Consumer<TimerProvider>(
       builder: (context, timerData, child) {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildTimerRing(timerData.formattedTime),
+            _buildTimerRing(context, timerData),
             const SizedBox(height: 48),
             _buildTitles(),
             const SizedBox(height: 48),
@@ -167,7 +159,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTimerRing(String time) {
+  Widget _buildTimerRing(BuildContext context, TimerProvider timerData) {
     return Container(
       width: 280,
       height: 280,
@@ -192,13 +184,20 @@ class HomeScreen extends StatelessWidget {
            Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                time,
-                style: const TextStyle(
-                  fontSize: 64,
-                  fontWeight: FontWeight.w300,
-                  color: Colors.white,
-                  letterSpacing: -2,
+              GestureDetector(
+                onTap: () => _showTimerEditDialog(context, timerData),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                  child: Text(
+                    timerData.formattedTime,
+                    style: const TextStyle(
+                      fontSize: 64,
+                      fontWeight: FontWeight.w300,
+                      color: Colors.white,
+                      letterSpacing: -2,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -321,6 +320,81 @@ class HomeScreen extends StatelessWidget {
           size: 40,
         ),
       ),
+    );
+  }
+
+  void _showTimerEditDialog(BuildContext context, TimerProvider timerData) {
+    int currentMinutes = timerData.remainingSeconds ~/ 60;
+    int currentSeconds = timerData.remainingSeconds % 60;
+    final minController = TextEditingController(text: currentMinutes.toString().padLeft(2, '0'));
+    final secController = TextEditingController(text: currentSeconds.toString().padLeft(2, '0'));
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppTheme.skyLight,
+          title: const Text('Edit Meditation Time', style: TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                width: 70,
+                child: TextField(
+                  controller: minController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.skyDeep),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: Text(':', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+              ),
+              SizedBox(
+                width: 70,
+                child: TextField(
+                  controller: secController,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppTheme.skyDeep),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: AppTheme.textLight, fontSize: 16)),
+            ),
+            TextButton(
+              onPressed: () {
+                int min = int.tryParse(minController.text) ?? 25;
+                int sec = int.tryParse(secController.text) ?? 0;
+                timerData.setTimer(min, sec);
+                Navigator.pop(context);
+              },
+              child: const Text('Save', style: TextStyle(color: AppTheme.skyBlue, fontWeight: FontWeight.bold, fontSize: 16)),
+            ),
+          ],
+        );
+      },
     );
   }
 }
