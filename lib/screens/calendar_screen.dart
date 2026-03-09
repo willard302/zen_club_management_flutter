@@ -62,7 +62,7 @@ class CalendarScreen extends StatelessWidget {
             children: [
               const SizedBox(width: 40), // Placeholder to maintain centered title
               const Text(
-                'Sky Club Calendar',
+                '社團日曆',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -81,7 +81,7 @@ class CalendarScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'SELECTED MONTH',
+                    '選擇月份',
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -90,7 +90,7 @@ class CalendarScreen extends StatelessWidget {
                     ),
                   ),
                   const Text(
-                    'November 2023',
+                    '2023年 11月',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -166,7 +166,7 @@ class CalendarScreen extends StatelessWidget {
   }
 
   Widget _buildDaysOfWeekRow() {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const days = ['一', '二', '三', '四', '五', '六', '日'];
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: days.map((day) => 
@@ -276,7 +276,7 @@ class CalendarScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Events Today',
+                '今日活動',
                 style: TextStyle(
                   color: AppTheme.textDark,
                   fontSize: 18,
@@ -284,7 +284,7 @@ class CalendarScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                'ADD EVENT',
+                '新增活動',
                 style: TextStyle(
                   color: AppTheme.skyBlue,
                   fontSize: 12,
@@ -300,7 +300,7 @@ class CalendarScreen extends StatelessWidget {
                final events = calProvider.getEventsForDate(calProvider.selectedDate);
                
                if (events.isEmpty) {
-                 return const Center(child: Text("No events today."));
+                 return const Center(child: Text("今日無活動。"));
                }
 
                return ListView.builder(
@@ -382,7 +382,7 @@ class CalendarScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${event.location} • ${event.participants == 0 ? "All" : event.participants} Participants',
+                    '${event.location} • ${event.participants == 0 ? "全部" : event.participants} 與會者',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey.shade500,

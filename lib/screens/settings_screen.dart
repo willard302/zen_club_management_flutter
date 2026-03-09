@@ -59,7 +59,7 @@ class SettingsScreen extends StatelessWidget {
         children: [
           const SizedBox(width: 40), // Placeholder to maintain centered title
           const Text(
-            'Settings',
+            '設定',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -72,17 +72,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildIconButton(IconData icon) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.2),
-        shape: BoxShape.circle,
-      ),
-      child: Icon(icon, color: Colors.white, size: 20),
-    );
-  }
+
 
   Widget _buildProfileCard(BuildContext context) {
     return Padding(
@@ -164,26 +154,26 @@ class SettingsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionTitle('ACCOUNT SETTINGS'),
+          _buildSectionTitle('帳號設定'),
           _buildSettingsGroup([
-            _buildSettingItem(Icons.person_outline, 'Personal Information', true, null),
-            _buildSettingItem(Icons.notifications_none, 'Notifications', true, null),
-            _buildSettingItem(Icons.lock_open, 'Privacy & Security', true, null),
+            _buildSettingItem(Icons.person_outline, '個人資訊', true, null),
+            _buildSettingItem(Icons.notifications_none, '通知', true, null),
+            _buildSettingItem(Icons.lock_open, '隱私與安全', true, null),
           ]),
           const SizedBox(height: 32),
-          _buildSectionTitle('APP EXPERIENCE'),
+          _buildSectionTitle('應用程式體驗'),
           _buildSettingsGroup([
-            _buildSettingItem(Icons.palette, 'Theme Preference', false, 
+            _buildSettingItem(Icons.palette, '主題偏好', false, 
                Container(
                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                  decoration: BoxDecoration(
                    color: AppTheme.skyLight.withValues(alpha: 0.5),
                    borderRadius: BorderRadius.circular(4),
                  ),
-                 child: const Text('Blue Sky', style: TextStyle(color: Color(0xFF0284C7), fontSize: 12, fontWeight: FontWeight.w600)),
+                 child: const Text('湛藍天空', style: TextStyle(color: Color(0xFF0284C7), fontSize: 12, fontWeight: FontWeight.w600)),
                )
             ),
-            _buildSettingItem(Icons.language, 'Language', true, null),
+            _buildSettingItem(Icons.language, '語言', true, null),
           ]),
           const SizedBox(height: 16),
           _buildSignOutButton(),
@@ -266,7 +256,7 @@ class SettingsScreen extends StatelessWidget {
        ),
        child: Center(
          child: Text(
-           'Sign Out',
+           '登出',
            style: TextStyle(
              color: Colors.red.shade500,
              fontWeight: FontWeight.bold,

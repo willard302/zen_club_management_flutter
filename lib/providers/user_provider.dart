@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class UserProvider with ChangeNotifier {
   String _name = "Alex Rivers";
-  String _role = "Zen Master Member";
+  String _role = "禪學社會員";
 
   String get name => _name;
   String get role => _role;

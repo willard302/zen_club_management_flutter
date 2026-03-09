@@ -11,7 +11,7 @@ class StatisticsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppTheme.skyLight, // match main app background
       appBar: AppBar(
-        title: const Text('Statistics Overview', style: TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text('統計總覽', style: TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.bold, fontSize: 18)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: AppTheme.textDark),
@@ -27,7 +27,7 @@ class StatisticsScreen extends StatelessWidget {
               _buildTotalTimeCard(context),
               const SizedBox(height: 32),
               const Text(
-                'Recent Sessions',
+                '最近禪修紀錄',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.textDark),
               ),
               const SizedBox(height: 20),
@@ -78,7 +78,7 @@ class StatisticsScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Total Meditation Time',
+                '總禪修時間',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.8),
                   fontSize: 14,
@@ -113,22 +113,22 @@ class StatisticsScreen extends StatelessWidget {
           return Column(
             children: [
               _buildSessionItem(
-                title: 'Morning Mindful Flow',
-                note: 'Felt very calm and centered today...',
+                title: '晨間靜心',
+                note: '今天感覺非常平靜與專注...',
                 durationString: '45m',
                 icon: Icons.wb_sunny_outlined,
               ),
               const SizedBox(height: 16),
               _buildSessionItem(
-                title: 'Evening Zen Reflection',
-                note: 'Released the stress from exams.',
+                title: '晚間反思',
+                note: '釋放了考試的壓力。',
                 durationString: '30m',
                 icon: Icons.nights_stay_outlined,
               ),
               const SizedBox(height: 16),
               _buildSessionItem(
-                title: 'Lunchtime Breathing',
-                note: 'Quick reset during classes.',
+                title: '午間呼吸練習',
+                note: '課間的快速重置。',
                 durationString: '15m',
                 icon: Icons.restaurant_menu_outlined,
               ),
@@ -147,7 +147,7 @@ class StatisticsScreen extends StatelessWidget {
             final secs = session.duration.inSeconds.remainder(60);
             String timeStr = mins > 0 ? '${mins}m' : '${secs}s';
             return _buildSessionItem(
-              title: 'Meditation Session',
+              title: '禪修紀錄',
               note: '${session.date.month}/${session.date.day} ${session.date.hour}:${session.date.minute.toString().padLeft(2, '0')}',
               durationString: timeStr,
               icon: Icons.self_improvement,
@@ -245,12 +245,12 @@ class StatisticsScreen extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(context, Icons.home_filled, 'Home', false, () {
+              _buildNavItem(context, Icons.home_filled, '首頁', false, () {
                 Navigator.pop(context); // Go back home
               }),
-              _buildNavItem(context, Icons.bar_chart, 'Stats', true, () {}),
-              _buildNavItem(context, Icons.timer, 'Sessions', false, () {}),
-              _buildNavItem(context, Icons.person, 'Profile', false, () {}),
+              _buildNavItem(context, Icons.bar_chart, '統計', true, () {}),
+              _buildNavItem(context, Icons.timer, '禪修', false, () {}),
+              _buildNavItem(context, Icons.person, '個人', false, () {}),
             ],
           ),
         ),

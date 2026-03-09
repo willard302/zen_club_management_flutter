@@ -177,13 +177,13 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Column(
         children: [
           _buildGlassField(
-            hint: 'Enter your email',
+            hint: '輸入電子郵件',
             controller: _emailController,
             isPassword: false,
           ),
           const SizedBox(height: 16),
           _buildGlassField(
-            hint: 'Enter your password',
+            hint: '輸入密碼',
             controller: _passwordController,
             isPassword: true,
           ),
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Forgot Password?',
+                '忘記密碼？',
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14),
               ),
               GestureDetector(
@@ -207,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     border: Border(bottom: BorderSide(color: Colors.white.withValues(alpha: 0.3))),
                   ),
                   child: const Text(
-                    'Sign Up',
+                    '註冊',
                     style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -291,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         child: const Center(
           child: Text(
-            'Login',
+            '登入',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -313,7 +313,7 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                'OR CONTINUE WITH',
+                '或以此方式繼續',
                 style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.4),
                   fontSize: 12,

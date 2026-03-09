@@ -41,7 +41,7 @@ class _SignupScreenState extends State<SignupScreen> {
         confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please fill completely in all fields.'),
+          content: Text('請填寫所有欄位。'),
           backgroundColor: Colors.red,
         ),
       );
@@ -52,7 +52,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!RegExp(r'^\d{9}$').hasMatch(studentId)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Student ID must be exactly 9 digits.'),
+          content: Text('學號必須剛好9碼。'),
           backgroundColor: Colors.red,
         ),
       );
@@ -63,7 +63,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter a valid email address.'),
+          content: Text('請輸入有效的電子郵件地址。'),
           backgroundColor: Colors.red,
         ),
       );
@@ -74,7 +74,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$').hasMatch(password)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Password must be 8-20 characters long and contain both letters and numbers.'),
+          content: Text('密碼必須為8-20個字元，並包含字母與數字。'),
           backgroundColor: Colors.red,
         ),
       );
@@ -84,7 +84,7 @@ class _SignupScreenState extends State<SignupScreen> {
     if (password != confirmPassword) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Passwords do not match. Please try again.'),
+          content: Text('密碼不符，請再試一次。'),
           backgroundColor: Colors.red,
         ),
       );
@@ -94,7 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
     // Proceed with registration
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Registration successful'),
+        content: Text('註冊成功'),
         backgroundColor: Colors.green,
       ),
     );
@@ -164,7 +164,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text('TKU Zen Club', style: TextStyle(color: AppTheme.textDark, fontSize: 24, fontWeight: FontWeight.bold)),
-                  Text('Join our peaceful community', style: TextStyle(color: AppTheme.textDark.withValues(alpha: 0.8), fontSize: 14, fontWeight: FontWeight.w500)),
+                  Text('加入我們平靜的社群', style: TextStyle(color: AppTheme.textDark.withValues(alpha: 0.8), fontSize: 14, fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
@@ -180,9 +180,9 @@ class _SignupScreenState extends State<SignupScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Create Account', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
+          const Text('建立帳號', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: AppTheme.textDark)),
           const SizedBox(height: 4),
-          Text('Start your journey to inner peace and mindfulness.', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
+          Text('開始您內在平靜與正念的旅程。', style: TextStyle(color: Colors.grey.shade500, fontSize: 16)),
         ],
       ),
     );
@@ -193,11 +193,11 @@ class _SignupScreenState extends State<SignupScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         children: [
-          _buildInputField(hint: 'Enter your full name', icon: Icons.person_outline, controller: _nameController),
+          _buildInputField(hint: '輸入您的全名', icon: Icons.person_outline, controller: _nameController),
           const SizedBox(height: 16),
-          _buildInputField(hint: 'Enter your student ID', icon: Icons.badge_outlined, controller: _studentIdController),
+          _buildInputField(hint: '輸入您的學號', icon: Icons.badge_outlined, controller: _studentIdController),
           const SizedBox(height: 16),
-          _buildInputField(hint: 'Enter your email', icon: Icons.mail_outline, controller: _emailController),
+          _buildInputField(hint: '輸入您的電子郵件', icon: Icons.mail_outline, controller: _emailController),
           const SizedBox(height: 16),
           _buildPasswordField(),
           const SizedBox(height: 16),
@@ -246,7 +246,7 @@ class _SignupScreenState extends State<SignupScreen> {
             controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: InputDecoration(
-              hintText: 'Create a password',
+              hintText: '建立密碼',
               hintStyle: TextStyle(color: Colors.grey.shade400),
               prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade400),
               suffixIcon: GestureDetector(
@@ -280,7 +280,7 @@ class _SignupScreenState extends State<SignupScreen> {
             controller: _confirmPasswordController,
             obscureText: _obscureConfirmPassword,
             decoration: InputDecoration(
-              hintText: 'Confirm password',
+              hintText: '確認密碼',
               hintStyle: TextStyle(color: Colors.grey.shade400),
               prefixIcon: Icon(Icons.lock_outline, color: Colors.grey.shade400),
               suffixIcon: GestureDetector(
@@ -323,7 +323,7 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
               child: const Center(
                  child: Text(
-                   'Register',
+                   '註冊',
                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                  )
               ),
@@ -333,11 +333,11 @@ class _SignupScreenState extends State<SignupScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Already have an account?', style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
+              Text('已經有帳號了嗎？', style: TextStyle(color: Colors.grey.shade500, fontSize: 14)),
               const SizedBox(width: 8),
               GestureDetector(
                 onTap: () => Navigator.pop(context),
-                child: const Text('Back to Login', style: TextStyle(color: AppTheme.skyDeep, fontSize: 14, fontWeight: FontWeight.bold)),
+                child: const Text('返回登入', style: TextStyle(color: AppTheme.skyDeep, fontSize: 14, fontWeight: FontWeight.bold)),
               )
             ],
           )

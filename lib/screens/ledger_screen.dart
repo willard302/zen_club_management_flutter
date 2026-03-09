@@ -42,7 +42,7 @@ class LedgerScreen extends StatelessWidget {
         children: [
           const SizedBox(width: 40), // Placeholder to maintain centered title
           const Text(
-            'Sky Club Ledger',
+            '社費帳本',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w600,
@@ -97,7 +97,7 @@ class LedgerScreen extends StatelessWidget {
              child: Column(
                children: [
                  const Text(
-                    'TOTAL AVAILABLE BALANCE',
+                    '總可用餘額',
                     style: TextStyle(
                       color: Colors.white60,
                       fontSize: 12,
@@ -121,7 +121,7 @@ class LedgerScreen extends StatelessWidget {
                      Expanded(
                        child: _buildActionButton(
                          icon: Icons.add_circle,
-                         label: 'Add Entry',
+                         label: '新增紀錄',
                          isPrimary: true,
                          onTap: () {
                            _showAddEntrySheet(context);
@@ -132,7 +132,7 @@ class LedgerScreen extends StatelessWidget {
                      Expanded(
                        child: _buildActionButton(
                          icon: Icons.ios_share,
-                         label: 'Export',
+                         label: '匯出',
                          isPrimary: false,
                          onTap: () {}
                        ),
@@ -193,7 +193,7 @@ class LedgerScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildSummaryCard(
-                  title: 'INCOME',
+                  title: '收入',
                   amount: '+${currencyFormat.format(ledger.totalIncome)}',
                   icon: Icons.arrow_downward,
                   iconBgColor: AppTheme.skyLight.withValues(alpha: 0.5),
@@ -203,7 +203,7 @@ class LedgerScreen extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildSummaryCard(
-                  title: 'EXPENSE',
+                  title: '支出',
                   amount: '-${currencyFormat.format(ledger.totalExpense)}',
                   icon: Icons.arrow_upward,
                   iconBgColor: Colors.grey.withValues(alpha: 0.1),
@@ -285,7 +285,7 @@ class LedgerScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Recent Activity',
+                '最近活動',
                 style: TextStyle(
                   color: AppTheme.textDark,
                   fontSize: 18,
@@ -293,7 +293,7 @@ class LedgerScreen extends StatelessWidget {
                 ),
               ),
               Text(
-                'See All',
+                '查看全部',
                 style: TextStyle(
                   color: AppTheme.skyBlue,
                   fontSize: 14,
@@ -409,15 +409,15 @@ class LedgerScreen extends StatelessWidget {
            child: Column(
              mainAxisSize: MainAxisSize.min,
              children: [
-               const Text("Add Transaction", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+               const Text("新增交易", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                const SizedBox(height: 24),
-               const TextField(decoration: InputDecoration(labelText: 'Title', border: OutlineInputBorder())),
+               const TextField(decoration: InputDecoration(labelText: '標題', border: OutlineInputBorder())),
                const SizedBox(height: 16),
-               const TextField(decoration: InputDecoration(labelText: 'Amount', border: OutlineInputBorder()), keyboardType: TextInputType.number),
+               const TextField(decoration: InputDecoration(labelText: '金額', border: OutlineInputBorder()), keyboardType: TextInputType.number),
                const SizedBox(height: 24),
                ElevatedButton(
                  onPressed: () => Navigator.pop(context), 
-                 child: const Text('Save')
+                 child: const Text('儲存')
                ),
                const SizedBox(height: 32),
              ],

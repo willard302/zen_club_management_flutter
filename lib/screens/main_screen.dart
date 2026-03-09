@@ -65,10 +65,10 @@ class _MainScreenState extends State<MainScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildNavItem(icon: Icons.timer, label: 'Timer', index: 0),
-          _buildNavItem(icon: Icons.account_balance_wallet, label: 'Ledger', index: 1),
-          _buildNavItem(icon: Icons.calendar_today, label: 'Calendar', index: 2),
-          _buildNavItem(icon: Icons.person, label: 'Profile', index: 3),
+          _buildNavItem(icon: Icons.timer, label: '計時器', index: 0),
+          _buildNavItem(icon: Icons.account_balance_wallet, label: '帳本', index: 1),
+          _buildNavItem(icon: Icons.calendar_today, label: '日曆', index: 2),
+          _buildNavItem(icon: Icons.person, label: '個人', index: 3),
         ],
       ),
     );

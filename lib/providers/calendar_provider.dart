@@ -28,8 +28,8 @@ class CalendarProvider with ChangeNotifier {
   final List<ClubEvent> _events = [
     ClubEvent(
       id: "1",
-      title: "Zen Morning Meditation",
-      location: "Main Hall",
+      title: "早晨禪定",
+      location: "主大廳",
       dateTime: DateTime(2023, 11, 10, 9, 0),
       participants: 45,
       type: EventType.meditation,
@@ -37,8 +37,8 @@ class CalendarProvider with ChangeNotifier {
     ),
     ClubEvent(
       id: "2",
-      title: "Gardening Workshop",
-      location: "Outdoor Terrace",
+      title: "園藝工作坊",
+      location: "戶外露台",
       dateTime: DateTime(2023, 11, 10, 14, 30),
       participants: 12,
       type: EventType.workshop,
@@ -46,8 +46,8 @@ class CalendarProvider with ChangeNotifier {
     ),
     ClubEvent(
       id: "3",
-      title: "Committee Meeting",
-      location: "Board Room",
+      title: "委員會會議",
+      location: "會議室",
       dateTime: DateTime(2023, 11, 10, 18, 0),
       participants: 8,
       type: EventType.meeting,
@@ -56,8 +56,8 @@ class CalendarProvider with ChangeNotifier {
     // Mock birthday for demonstration on another day (e.g. Nov 4)
     ClubEvent(
       id: "4",
-      title: "Alex's Birthday",
-      location: "Club Lounge",
+      title: "Alex 的生日",
+      location: "社團休息室",
       dateTime: DateTime(2023, 11, 4),
       participants: 0,
       type: EventType.birthday,
@@ -65,8 +65,8 @@ class CalendarProvider with ChangeNotifier {
     ),
      ClubEvent(
       id: "5",
-      title: "Sam's Birthday",
-      location: "Club Lounge",
+      title: "Sam 的生日",
+      location: "社團休息室",
       dateTime: DateTime(2023, 11, 14),
       participants: 0,
       type: EventType.birthday,
@@ -74,8 +74,8 @@ class CalendarProvider with ChangeNotifier {
     ),
     ClubEvent(
       id: "6",
-      title: "Kim's Birthday",
-      location: "Club Lounge",
+      title: "Kim 的生日",
+      location: "社團休息室",
       dateTime: DateTime(2023, 11, 17),
       participants: 0,
       type: EventType.birthday,

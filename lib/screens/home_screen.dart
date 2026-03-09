@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
         children: [
           const SizedBox(width: 40), // Placeholder to maintain centered title
           const Text(
-            'Sky Zen Timer',
+            '天空禪修計時器',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -202,7 +202,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'REMAINING',
+                '剩餘時間',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -241,7 +241,7 @@ class HomeScreen extends StatelessWidget {
     return Column(
       children: [
         const Text(
-          'Morning Reflection',
+          '晨間靜心',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w600,
@@ -250,7 +250,7 @@ class HomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'Find your center in the clear blue sky',
+          '在湛蓝的天空中找回內心的平靜',
           style: TextStyle(
             fontSize: 14,
             color: const Color(0xFF075985).withValues(alpha: 0.6),
@@ -334,7 +334,7 @@ class HomeScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           backgroundColor: AppTheme.skyLight,
-          title: const Text('Edit Meditation Time', style: TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
+          title: const Text('編輯禪修時間', style: TextStyle(color: AppTheme.textDark, fontWeight: FontWeight.bold, fontSize: 18), textAlign: TextAlign.center),
           content: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -381,7 +381,7 @@ class HomeScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: AppTheme.textLight, fontSize: 16)),
+              child: const Text('取消', style: TextStyle(color: AppTheme.textLight, fontSize: 16)),
             ),
             TextButton(
               onPressed: () {
@@ -390,7 +390,7 @@ class HomeScreen extends StatelessWidget {
                 timerData.setTimer(min, sec);
                 Navigator.pop(context);
               },
-              child: const Text('Save', style: TextStyle(color: AppTheme.skyBlue, fontWeight: FontWeight.bold, fontSize: 16)),
+              child: const Text('儲存', style: TextStyle(color: AppTheme.skyBlue, fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ],
         );
