@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/theme/app_icons.dart';
 
 enum EventType { meditation, workshop, meeting, birthday }
 
@@ -9,7 +10,7 @@ class ClubEvent {
   final DateTime dateTime;
   final int participants;
   final EventType type;
-  final IconData icon;
+  final int iconCode;
 
   ClubEvent({
     required this.id,
@@ -18,8 +19,22 @@ class ClubEvent {
     required this.dateTime,
     required this.participants,
     required this.type,
-    required this.icon,
+    required this.iconCode,
   });
+
+  /// 获取 IconData 对象 - 返回预定义的常数图标
+  IconData getIcon() {
+    switch (type) {
+      case EventType.meditation:
+        return AppIcons.selfImprovement;
+      case EventType.workshop:
+        return AppIcons.eco;
+      case EventType.meeting:
+        return AppIcons.group;
+      case EventType.birthday:
+        return AppIcons.cake;
+    }
+  }
 }
 
 class CalendarProvider with ChangeNotifier {
@@ -33,7 +48,7 @@ class CalendarProvider with ChangeNotifier {
       dateTime: DateTime(2023, 11, 10, 9, 0),
       participants: 45,
       type: EventType.meditation,
-      icon: Icons.self_improvement,
+      iconCode: 0xf03d, // Icons.self_improvement
     ),
     ClubEvent(
       id: "2",
@@ -42,7 +57,7 @@ class CalendarProvider with ChangeNotifier {
       dateTime: DateTime(2023, 11, 10, 14, 30),
       participants: 12,
       type: EventType.workshop,
-      icon: Icons.eco,
+      iconCode: 0xf0e4, // Icons.eco
     ),
     ClubEvent(
       id: "3",
@@ -51,7 +66,7 @@ class CalendarProvider with ChangeNotifier {
       dateTime: DateTime(2023, 11, 10, 18, 0),
       participants: 8,
       type: EventType.meeting,
-      icon: Icons.group,
+      iconCode: 0xf023, // Icons.group
     ),
     // Mock birthday for demonstration on another day (e.g. Nov 4)
     ClubEvent(
@@ -61,7 +76,7 @@ class CalendarProvider with ChangeNotifier {
       dateTime: DateTime(2023, 11, 4),
       participants: 0,
       type: EventType.birthday,
-      icon: Icons.cake,
+      iconCode: 0xf0b9, // Icons.cake
     ),
      ClubEvent(
       id: "5",
@@ -70,7 +85,7 @@ class CalendarProvider with ChangeNotifier {
       dateTime: DateTime(2023, 11, 14),
       participants: 0,
       type: EventType.birthday,
-      icon: Icons.cake,
+      iconCode: 0xf0b9, // Icons.cake
     ),
     ClubEvent(
       id: "6",
@@ -79,7 +94,7 @@ class CalendarProvider with ChangeNotifier {
       dateTime: DateTime(2023, 11, 17),
       participants: 0,
       type: EventType.birthday,
-      icon: Icons.cake,
+      iconCode: 0xf0b9, // Icons.cake
     ),
   ];
 

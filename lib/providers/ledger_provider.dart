@@ -1,100 +1,28 @@
 import 'package:flutter/material.dart';
-
-enum TransactionType { income, expense }
-
-class Transaction {
-  final String id;
-  final String title;
-  final String requester;
-  final String finance;
-  final String category;
-  final double amount;
-  final DateTime date;
-  final TransactionType type;
-  final String status;
-  final IconData icon;
-  final String? receiptPath;
-  final bool isApproved;
-
-  Transaction({
-    required this.id,
-    required this.title,
-    required this.requester,
-    required this.finance,
-    required this.category,
-    required this.amount,
-    required this.date,
-    required this.type,
-    required this.status,
-    required this.icon,
-    this.receiptPath,
-    this.isApproved = false,
-  });
-}
+import 'package:app/models/transaction.dart';
+import 'package:app/services/supabase_service.dart';
 
 class LedgerProvider with ChangeNotifier {
+  final SupabaseService _supabaseService;
+
   double _initialLimit = 0.0;
   double _monthlyBudget = 5000.0;
-  final bool _isAdmin = true; // Simple permission control mock
+  bool _isAdmin = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  final List<Transaction> _transactions = [
-    Transaction(
-      id: "1",
-      title: "禪修工作坊費用",
-      requester: "王大明",
-      finance: "李小華",
-      category: "禪修 • 上午 10:45",
-      amount: 450.00,
-      date: DateTime.now(),
-      type: TransactionType.income,
-      status: "已確認",
-      icon: Icons.spa,
-      isApproved: true,
-    ),
-    Transaction(
-      id: "2",
-      title: "園藝用品",
-      requester: "陳建國",
-      finance: "李小華",
-      category: "維護 • 昨天",
-      amount: 120.50,
-      date: DateTime.now().subtract(const Duration(days: 1)),
-      type: TransactionType.expense,
-      status: "已結算",
-      icon: Icons.eco,
-      isApproved: true,
-    ),
-    Transaction(
-      id: "3",
-      title: "每月會費",
-      requester: "林美玲",
-      finance: "李小華",
-      category: "會員 • 10月24日",
-      amount: 1200.00,
-      date: DateTime.now().subtract(const Duration(days: 3)),
-      type: TransactionType.income,
-      status: "已確認",
-      icon: Icons.diversity_3,
-      isApproved: true,
-    ),
-    Transaction(
-      id: "4",
-      title: "水電費",
-      requester: "張小芬",
-      finance: "李小華",
-      category: "設施 • 10月22日",
-      amount: 340.00,
-      date: DateTime.now().subtract(const Duration(days: 5)),
-      type: TransactionType.expense,
-      status: "處理中",
-      icon: Icons.lightbulb,
-      isApproved: false,
-    ),
-  ];
+  final List<Transaction> _transactions = [];
 
+  LedgerProvider(this._supabaseService) {
+    loadTransactions();
+  }
+
+  // Getters
   List<Transaction> get transactions => _transactions;
   bool get isAdmin => _isAdmin;
   double get monthlyBudget => _monthlyBudget;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
   double get totalIncome {
     return _transactions
@@ -112,36 +40,186 @@ class LedgerProvider with ChangeNotifier {
     return _initialLimit + totalIncome - totalExpense;
   }
 
-  void addTransaction(Transaction transaction) {
-    if (!_isAdmin) return; // Permission check
-    _transactions.insert(0, transaction);
+  /// 加载交易记录
+  Future<void> loadTransactions() async {
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
-  }
 
-  void updateTransaction(Transaction updatedTx) {
-    if (!_isAdmin) return;
-    final index = _transactions.indexWhere((t) => t.id == updatedTx.id);
-    if (index != -1) {
-      _transactions[index] = updatedTx;
+    try {
+      final transactions = await _supabaseService.getTransactions();
+      _transactions.clear();
+      _transactions.addAll(transactions);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = '加载交易记录失败: $e';
+      _isLoading = false;
       notifyListeners();
     }
   }
 
-  void deleteTransaction(String id) {
-    if (!_isAdmin) return;
-    _transactions.removeWhere((t) => t.id == id);
+  /// 根据用户加载交易记录
+  Future<void> loadUserTransactions(String userId) async {
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
+
+    try {
+      final transactions = await _supabaseService.getUserTransactions(userId);
+      _transactions.clear();
+      _transactions.addAll(transactions);
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = '加载用户交易记录失败: $e';
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  void setInitialLimit(double limit) {
+  /// 添加交易记录
+  Future<bool> addTransaction({
+    required String title,
+    required String requesterId,
+    required String financeId,
+    required String category,
+    required double amount,
+    required DateTime date,
+    required String type,
+    required String status,
+    required String iconCode,
+    String? receiptPath,
+    bool isApproved = false,
+  }) async {
+    if (!_isAdmin) {
+      _errorMessage = '权限不足';
+      notifyListeners();
+      return false;
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final transaction = await _supabaseService.createTransaction(
+        title: title,
+        requesterId: requesterId,
+        financeId: financeId,
+        category: category,
+        amount: amount,
+        date: date,
+        type: type,
+        status: status,
+        iconCode: iconCode,
+        receiptPath: receiptPath,
+        isApproved: isApproved,
+      );
+      _transactions.insert(0, transaction);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = '添加交易记录失败: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// 更新交易记录
+  Future<bool> updateTransaction({
+    required String id,
+    String? title,
+    String? category,
+    double? amount,
+    String? status,
+    bool? isApproved,
+  }) async {
+    if (!_isAdmin) {
+      _errorMessage = '权限不足';
+      notifyListeners();
+      return false;
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final updatedTx = await _supabaseService.updateTransaction(
+        id: id,
+        title: title,
+        category: category,
+        amount: amount,
+        status: status,
+        isApproved: isApproved,
+      );
+      final index = _transactions.indexWhere((t) => t.id == id);
+      if (index != -1) {
+        _transactions[index] = updatedTx;
+      }
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = '更新交易记录失败: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// 删除交易记录
+  Future<bool> deleteTransaction(String id) async {
+    if (!_isAdmin) {
+      _errorMessage = '权限不足';
+      notifyListeners();
+      return false;
+    }
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      await _supabaseService.deleteTransaction(id);
+      _transactions.removeWhere((t) => t.id == id);
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = '删除交易记录失败: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// 设置初始限额
+  Future<void> setInitialLimit(double limit) async {
     if (!_isAdmin) return;
     _initialLimit = limit;
     notifyListeners();
   }
 
-  void setMonthlyBudget(double budget) {
+  /// 设置每月预算
+  Future<void> setMonthlyBudget(double budget) async {
     if (!_isAdmin) return;
     _monthlyBudget = budget;
+    notifyListeners();
+  }
+
+  /// 设置管理员状态
+  void setIsAdmin(bool value) {
+    _isAdmin = value;
+    notifyListeners();
+  }
+
+  /// 清除错误消息
+  void clearError() {
+    _errorMessage = null;
     notifyListeners();
   }
 }
