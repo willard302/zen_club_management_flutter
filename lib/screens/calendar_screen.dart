@@ -368,7 +368,7 @@ class CalendarScreen extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Icon(event.icon, color: AppTheme.skyBlue, size: 18),
+                      Icon(event.getIcon(), color: AppTheme.skyBlue, size: 18),
                       const SizedBox(width: 8),
                       Text(
                         event.title,

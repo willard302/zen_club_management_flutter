@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/ledger_provider.dart';
 import 'package:app/providers/user_provider.dart';
+import 'package:app/models/transaction.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
 import 'dart:io';
 import 'package:flutter/foundation.dart'; // for kIsWeb
 import 'package:image_picker/image_picker.dart';
@@ -43,8 +43,8 @@ class _ClubLedgerEditScreenState extends State<ClubLedgerEditScreen> {
     // The Stitch design shows "社團耗材" as placeholder
     _categoryController = TextEditingController(text: tx?.category ?? '');
     _amountController = TextEditingController(text: tx != null ? tx.amount.toString() : '');
-    _requesterController = TextEditingController(text: tx?.requester ?? '');
-    _financeController = TextEditingController(text: tx?.finance ?? '');
+    _requesterController = TextEditingController(text: '');
+    _financeController = TextEditingController(text: '');
     _selectedDate = tx?.date ?? DateTime.now();
     _selectedType = tx?.type ?? TransactionType.expense;
     _receiptPath = tx?.receiptPath;
@@ -129,27 +129,43 @@ class _ClubLedgerEditScreenState extends State<ClubLedgerEditScreen> {
       return;
     }
 
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final currentUserId = userProvider.userId;
+    
+    if (currentUserId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('未登入使用者'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
     final provider = Provider.of<LedgerProvider>(context, listen: false);
 
-    final newTx = Transaction(
-      id: widget.transaction?.id ?? Random().nextInt(100000).toString(),
-      title: _titleController.text.trim(),
-      requester: _requesterController.text.trim(),
-      finance: _financeController.text.trim(),
-      category: _categoryController.text.trim(),
-      amount: amount,
-      date: _selectedDate,
-      type: _selectedType,
-      status: widget.transaction?.status ?? '處理中',
-      icon: widget.transaction?.icon ?? (_selectedType == TransactionType.income ? Icons.attach_money : Icons.receipt_long),
-      receiptPath: _receiptPath,
-      isApproved: _isApproved,
-    );
-
     if (widget.transaction == null) {
-      provider.addTransaction(newTx);
+      // 新交易
+      provider.addTransaction(
+        title: _titleController.text.trim(),
+        requesterId: currentUserId,
+        financeId: currentUserId,
+        category: _categoryController.text.trim(),
+        amount: amount,
+        date: _selectedDate,
+        type: _selectedType == TransactionType.income ? 'income' : 'expense',
+        status: '待處理',
+        iconCode: (_selectedType == TransactionType.income ? Icons.attach_money : Icons.receipt_long).codePoint.toString(),
+        receiptPath: _receiptPath,
+        isApproved: false,
+      );
     } else {
-      provider.updateTransaction(newTx);
+      // 編輯現有交易
+      provider.updateTransaction(
+        id: widget.transaction!.id,
+        title: _titleController.text.trim(),
+        category: _categoryController.text.trim(),
+        amount: amount,
+        status: widget.transaction!.status,
+        isApproved: _isApproved,
+      );
     }
 
     Navigator.pop(context);

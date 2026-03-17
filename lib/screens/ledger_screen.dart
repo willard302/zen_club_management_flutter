@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/ledger_provider.dart';
 import 'package:app/screens/club_ledger_edit_screen.dart';
+import 'package:app/models/transaction.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -147,7 +148,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
   Widget _buildBalanceCard(BuildContext context) {
     return Consumer<LedgerProvider>(
       builder: (context, ledger, child) {
-        final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+        final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
         
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
@@ -446,7 +447,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
 
   Widget _buildTransactionItem(Transaction tx) {
     final isIncome = tx.type == TransactionType.income;
-    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
+    final currencyFormat = NumberFormat.currency(symbol: '\$', decimalDigits: 0);
     
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20),
@@ -462,7 +463,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
                    color: isIncome ? AppTheme.skyLight.withValues(alpha: 0.5) : Colors.grey.shade50,
                    shape: BoxShape.circle,
                 ),
-                child: Icon(tx.icon, color: isIncome ? AppTheme.skyBlue : Colors.grey),
+                child: Icon(tx.getIcon(), color: isIncome ? AppTheme.skyBlue : Colors.grey),
               ),
               const SizedBox(width: 16),
               Column(
@@ -478,7 +479,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '請款: ${tx.requester} | 財務: ${tx.finance}',
+                    tx.category,
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 12,
