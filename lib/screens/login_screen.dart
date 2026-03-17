@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
-import 'package:app/screens/signup_screen.dart';
-import 'package:app/screens/main_screen.dart';
 import 'package:app/providers/user_provider.dart';
+import 'package:app/constants/app_routes.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:ui';
 
@@ -44,10 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) {
         if (success) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const MainScreen()),
-          );
+          Navigator.pushReplacementNamed(context, AppRoutes.main);
         } else {
           _showErrorDialog(userProvider.errorMessage ?? '登入失敗，請重試');
         }
@@ -247,7 +243,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SignupScreen()));
+                  Navigator.pushNamed(context, AppRoutes.signup);
                 },
                 child: Container(
                   padding: const EdgeInsets.only(bottom: 2),

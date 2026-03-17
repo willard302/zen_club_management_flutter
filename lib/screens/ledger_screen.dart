@@ -4,6 +4,7 @@ import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/ledger_provider.dart';
 import 'package:app/screens/club_ledger_edit_screen.dart';
 import 'package:app/models/transaction.dart';
+import 'package:app/constants/app_routes.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -199,10 +200,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
                          label: '新增紀錄',
                          isPrimary: true,
                          onTap: () {
-                           Navigator.push(
-                             context,
-                             MaterialPageRoute(builder: (context) => const ClubLedgerEditScreen()),
-                           );
+                           _navigateToEditScreen(null);
                          }
                        ),
                      ),
@@ -428,10 +426,7 @@ class _LedgerScreenState extends State<LedgerScreen> {
                     final tx = displayList[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                           context,
-                           MaterialPageRoute(builder: (context) => ClubLedgerEditScreen(transaction: tx)),
-                        );
+                        _navigateToEditScreen(tx);
                       },
                       behavior: HitTestBehavior.opaque,
                       child: _buildTransactionItem(tx),
@@ -550,5 +545,15 @@ class _LedgerScreenState extends State<LedgerScreen> {
 
   String _formatDate(DateTime date) {
     return DateFormat('yyyy/MM/dd').format(date);
+  }
+
+  /// 導航到編輯屏幕（用於新增或編輯事務）
+  void _navigateToEditScreen(Transaction? transaction) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ClubLedgerEditScreen(transaction: transaction),
+      ),
+    );
   }
 }

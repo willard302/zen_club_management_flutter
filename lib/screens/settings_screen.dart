@@ -2,9 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/user_provider.dart';
+import 'package:app/constants/app_routes.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
+
+  Future<void> _handleSignOut(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      await userProvider.signOut();
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('已成功登出')),
+      );
+
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('登出失败: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,8 +93,6 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-
-
   Widget _buildProfileCard(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -122,7 +141,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  user.name,
+                  user.name.isNotEmpty ? user.name : '使用者',
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -175,8 +194,8 @@ class SettingsScreen extends StatelessWidget {
             ),
             _buildSettingItem(Icons.language, '語言', true, null),
           ]),
-          const SizedBox(height: 16),
-          _buildSignOutButton(),
+          const SizedBox(height: 32),
+          _buildSignOutButton(context),
         ],
       ),
     );
@@ -246,24 +265,28 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSignOutButton() {
-     return Container(
-       width: double.infinity,
-       padding: const EdgeInsets.symmetric(vertical: 16),
-       decoration: BoxDecoration(
-         borderRadius: BorderRadius.circular(16),
-         border: Border.all(color: Colors.red.shade100),
-       ),
-       child: Center(
-         child: Text(
-           '登出',
-           style: TextStyle(
-             color: Colors.red.shade500,
-             fontWeight: FontWeight.bold,
-             fontSize: 14,
-           ),
-         ),
-       ),
-     );
+  Widget _buildSignOutButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: () => _handleSignOut(context),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          side: BorderSide(color: Colors.red.shade100),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16)
+          ),
+          foregroundColor: Colors.red.shade500
+        ),
+        child: Text(
+          '登出',
+          style: TextStyle(
+            color: Colors.red.shade500,
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
   }
 }

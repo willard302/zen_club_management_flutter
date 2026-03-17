@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/user_provider.dart';
-import 'package:app/screens/main_screen.dart';
+import 'package:app/constants/app_routes.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -83,10 +83,7 @@ class _SignupScreenState extends State<SignupScreen> {
       if (mounted) {
         if (success) {
           // 註冊成功，導航到主屏幕
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => const MainScreen()),
-          );
+          Navigator.pushReplacementNamed(context, AppRoutes.main);
         } else {
           // 顯示錯誤消息
           _showErrorDialog(userProvider.errorMessage ?? '註冊失敗，請重試');

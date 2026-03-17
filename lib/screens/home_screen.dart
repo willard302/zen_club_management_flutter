@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/timer_provider.dart';
-import 'package:app/screens/statistics_screen.dart';
+import 'package:app/constants/app_routes.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -104,10 +104,7 @@ class HomeScreen extends StatelessWidget {
               onSelected: (value) {
                 // Handle menu selection here
                 if (value == 'record') {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const StatisticsScreen()),
-                  );
+                  Navigator.pushNamed(context, AppRoutes.statistics);
                 } else if (value == 'settings') {
                   // Navigate to Sound Settings
                 }
