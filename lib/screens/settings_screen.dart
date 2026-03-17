@@ -175,22 +175,31 @@ class SettingsScreen extends StatelessWidget {
         children: [
           _buildSectionTitle('帳號設定'),
           _buildSettingsGroup([
-            _buildSettingItem(Icons.person_outline, '個人資訊', true, null),
+            _buildSettingItem(
+              Icons.person_outline, 
+              '個人資訊', 
+              true, 
+              null,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+            ),
             _buildSettingItem(Icons.notifications_none, '通知', true, null),
             _buildSettingItem(Icons.lock_open, '隱私與安全', true, null),
           ]),
           const SizedBox(height: 32),
           _buildSectionTitle('應用程式體驗'),
           _buildSettingsGroup([
-            _buildSettingItem(Icons.palette, '主題偏好', false, 
-               Container(
-                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                 decoration: BoxDecoration(
-                   color: AppTheme.skyLight.withValues(alpha: 0.5),
-                   borderRadius: BorderRadius.circular(4),
-                 ),
-                 child: const Text('湛藍天空', style: TextStyle(color: Color(0xFF0284C7), fontSize: 12, fontWeight: FontWeight.w600)),
-               )
+            _buildSettingItem(
+              Icons.palette, 
+              '主題偏好', 
+              false, 
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.skyLight.withValues(alpha: 0.5),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text('湛藍天空', style: TextStyle(color: Color(0xFF0284C7), fontSize: 12, fontWeight: FontWeight.w600)),
+              )
             ),
             _buildSettingItem(Icons.language, '語言', true, null),
           ]),
@@ -228,39 +237,45 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSettingItem(IconData icon, String title, bool hasChevron, Widget? trailing) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppTheme.skyLight.withValues(alpha: 0.5), width: 0.5)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
+  Widget _buildSettingItem(IconData icon, String title, bool hasChevron, Widget? trailing, {VoidCallback? onTap}) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppTheme.skyLight.withValues(alpha: 0.5), width: 0.5)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                width: 40, height: 40,
-                decoration: BoxDecoration(
-                  color: AppTheme.skyLight.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: AppTheme.skyBlue, size: 22),
+              Row(
+                children: [
+                  Container(
+                    width: 40, height: 40,
+                    decoration: BoxDecoration(
+                      color: AppTheme.skyLight.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(icon, color: AppTheme.skyBlue, size: 22),
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.grey.shade700,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  )
+                ],
               ),
-              const SizedBox(width: 16),
-              Text(
-                title,
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
-              )
+              if (trailing != null) trailing
+              else if (hasChevron) Icon(Icons.chevron_right, color: Colors.grey.shade300)
             ],
           ),
-          if (trailing != null) trailing
-          else if (hasChevron) Icon(Icons.chevron_right, color: Colors.grey.shade300)
-        ],
+        ),
       ),
     );
   }

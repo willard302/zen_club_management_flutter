@@ -10,6 +10,7 @@ import 'package:app/screens/ledger_screen.dart';
 import 'package:app/screens/calendar_screen.dart';
 import 'package:app/screens/settings_screen.dart';
 import 'package:app/screens/statistics_screen.dart';
+import 'package:app/screens/profile_screen.dart';
 import 'package:app/screens/club_ledger_edit_screen.dart';
 import 'package:app/providers/timer_provider.dart';
 import 'package:app/providers/ledger_provider.dart';
@@ -73,6 +74,7 @@ class ClubLedgerApp extends StatelessWidget {
         AppRoutes.calendar: (context) => const CalendarScreen(),
         AppRoutes.statistics: (context) => const StatisticsScreen(),
         AppRoutes.settings: (context) => const SettingsScreen(),
+        AppRoutes.profile: (context) => const ProfileScreen(),
         AppRoutes.clubLedgerEdit: (context) => const ClubLedgerEditScreen(),
       },
     );

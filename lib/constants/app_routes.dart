@@ -15,6 +15,9 @@ class AppRoutes {
   static const String statistics = '/statistics';
   static const String settings = '/settings';
 
+  // 個人資料
+  static const String profile = '/profile';
+
   // 編輯/詳情頁
   static const String clubLedgerEdit = '/club-ledger-edit';
 
@@ -29,6 +32,7 @@ class AppRoutes {
       calendar,
       statistics,
       settings,
+      profile,
       clubLedgerEdit,
     ];
   }
