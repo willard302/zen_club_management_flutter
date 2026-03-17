@@ -39,7 +39,6 @@ class _SignupScreenState extends State<SignupScreen> {
     final confirmPassword = _confirmPasswordController.text;
 
     if (name.isEmpty ||
-        studentId.isEmpty ||
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
@@ -48,7 +47,7 @@ class _SignupScreenState extends State<SignupScreen> {
     }
 
     // Validate Student ID (exactly 9 digits)
-    if (!RegExp(r'^\d{9}$').hasMatch(studentId)) {
+    if (studentId.isNotEmpty && !RegExp(r'^\d{9}$').hasMatch(studentId)) {
       _showErrorDialog('學號必須剛好9碼。');
       return;
     }
