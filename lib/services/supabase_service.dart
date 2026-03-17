@@ -20,19 +20,33 @@ class SupabaseService {
   /// 获取 Supabase 客户端
   SupabaseClient get client => _client;
 
-  /// 获取当前认证用户
-  app_models.User? get currentUser {
-    final session = _client.auth.currentSession;
-    if (session == null) return null;
-    
-    final user = session.user;
-    return app_models.User(
-      id: user.id,
-      email: user.email ?? '',
-      name: user.userMetadata?['name'] ?? '',
-      role: user.userMetadata?['role'] ?? '会员',
-      createdAt: DateTime.now(),
-    );
+  /// 获取当前认证用户（从内存缓存）
+  /// 注：如需最新数据，请调用 fetchCurrentUser()
+  app_models.User? _cachedCurrentUser;
+
+  /// 获取缓存的当前用户
+  app_models.User? get currentUser => _cachedCurrentUser;
+
+  /// 从 users 表获取最新的当前用户信息
+  Future<app_models.User?> fetchCurrentUser() async {
+    try {
+      final session = _client.auth.currentSession;
+      if (session == null) return null;
+
+      final userId = session.user.id;
+      
+      final userDoc = await _client
+          .from('users')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+      _cachedCurrentUser = app_models.User.fromJson(userDoc);
+      return _cachedCurrentUser;
+    } catch (e) {
+      print('获取当前用户信息失败: $e');
+      return null;
+    }
   }
 
   /// 初始化 Supabase
@@ -75,24 +89,7 @@ class SupabaseService {
       }
 
       final userId = response.user!.id;
-
-      // 第 2 步：在 users 表中创建用户记录
-      try {
-        await _client.from('users').insert({
-          'id': userId,
-          'email': email,
-          'name': name,
-          'student_id': studentId,
-          'role': role,
-          'created_at': DateTime.now().toIso8601String(),
-          'updated_at': DateTime.now().toIso8601String(),
-        });
-      } catch (e) {
-        print('警告：在 users 表中创建用户记录失败: $e');
-        // 继续执行，因为认证用户已创建成功
-      }
-
-      return app_models.User(
+      final newUser = app_models.User(
         id: userId,
         email: response.user!.email ?? email,
         name: name,
@@ -100,6 +97,39 @@ class SupabaseService {
         role: role,
         createdAt: DateTime.now(),
       );
+
+      // 第 2 步：在 users 表中创建用户记录
+      try {
+        await _client.from('users').insert({
+          'id': userId,
+          'avatar_url': '',
+          'email': email,
+          'gender': '',
+          'name': name,
+          'student_id': studentId,
+          'hierarchy': '',
+          'club_role': role,
+          'phone': '',
+          'line_id': '',
+          'instagram': '',
+          'department': '',
+          'grade': '',
+          'birthday': DateTime(2000, 1, 1).toIso8601String(), // 默认生日
+          'club_group': '',
+          'inviter': '',
+          'join_date': DateTime.now().toIso8601String(), // 默认加入时间
+          'created_by': 'system',
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+        print('✓ 用户记录已创建到 users 表');
+        _cachedCurrentUser = newUser;
+      } catch (e) {
+        print('⚠️ 警告：在 users 表中创建用户记录失败: $e');
+        // 继续执行，因为认证用户已创建成功
+      }
+
+      return newUser;
     } catch (e) {
       throw Exception('注册错误: $e');
     }
@@ -130,18 +160,23 @@ class SupabaseService {
             .eq('id', userId)
             .single();
 
-        return app_models.User.fromJson(userDoc);
+        final user = app_models.User.fromJson(userDoc);
+        _cachedCurrentUser = user;
+        print('✓ 用户信息已从 users 表加载');
+        return user;
       } catch (e) {
         // 如果 users 表中没有记录，从 auth 用户创建
-        print('警告：users 表中未找到用户记录，使用 auth 数据: $e');
+        print('⚠️ 警告：users 表中未找到用户记录，使用 auth 数据: $e');
         
-        return app_models.User(
+        final fallbackUser = app_models.User(
           id: userId,
           email: response.user!.email ?? email,
           name: response.user!.userMetadata?['name'] ?? email.split('@')[0],
           role: response.user!.userMetadata?['role'] ?? '会员',
           createdAt: DateTime.now(),
         );
+        _cachedCurrentUser = fallbackUser;
+        return fallbackUser;
       }
     } catch (e) {
       throw Exception('登录错误: $e');
@@ -152,6 +187,8 @@ class SupabaseService {
   Future<void> signOut() async {
     try {
       await _client.auth.signOut();
+      _cachedCurrentUser = null;
+      print('✓ 用户已登出，缓存已清除');
     } catch (e) {
       throw Exception('登出错误: $e');
     }
