@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
+import 'package:app/providers/user_provider.dart';
+import 'package:app/screens/main_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -16,6 +19,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,10 +31,10 @@ class _SignupScreenState extends State<SignupScreen> {
     super.dispose();
   }
 
-  void _handleSignup() {
-    final name = _nameController.text;
-    final studentId = _studentIdController.text;
-    final email = _emailController.text;
+  void _handleSignup() async {
+    final name = _nameController.text.trim();
+    final studentId = _studentIdController.text.trim();
+    final email = _emailController.text.trim();
     final password = _passwordController.text;
     final confirmPassword = _confirmPasswordController.text;
 
@@ -39,63 +43,77 @@ class _SignupScreenState extends State<SignupScreen> {
         email.isEmpty ||
         password.isEmpty ||
         confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('請填寫所有欄位。'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorDialog('請填寫所有欄位。');
       return;
     }
 
     // Validate Student ID (exactly 9 digits)
     if (!RegExp(r'^\d{9}$').hasMatch(studentId)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('學號必須剛好9碼。'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorDialog('學號必須剛好9碼。');
       return;
     }
 
     // Validate Email format
     if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('請輸入有效的電子郵件地址。'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorDialog('請輸入有效的電子郵件地址。');
       return;
     }
 
     // Validate Password (8-20 characters, letters and numbers mixed)
     if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,20}$').hasMatch(password)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('密碼必須為8-20個字元，並包含字母與數字。'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorDialog('密碼必須為8-20個字元，並包含字母與數字。');
       return;
     }
 
     if (password != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('密碼不符，請再試一次。'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      _showErrorDialog('密碼不符，請再試一次。');
       return;
     }
-    
-    // Proceed with registration
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('註冊成功'),
-        backgroundColor: Colors.green,
+
+    // 開始註冊流程
+    setState(() => _isLoading = true);
+
+    try {
+      final userProvider = context.read<UserProvider>();
+      final success = await userProvider.signUp(
+        email: email,
+        password: password,
+        name: name,        studentId: studentId,        role: '成員',
+      );
+
+      if (mounted) {
+        if (success) {
+          // 註冊成功，導航到主屏幕
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const MainScreen()),
+          );
+        } else {
+          // 顯示錯誤消息
+          _showErrorDialog(userProvider.errorMessage ?? '註冊失敗，請重試');
+          setState(() => _isLoading = false);
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        _showErrorDialog('註冊錯誤: ${e.toString()}');
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('錯誤'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('確定'),
+          ),
+        ],
       ),
     );
   }
@@ -306,12 +324,12 @@ class _SignupScreenState extends State<SignupScreen> {
       child: Column(
         children: [
           GestureDetector(
-            onTap: _handleSignup,
+            onTap: _isLoading ? null : _handleSignup,
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: BoxDecoration(
-                color: AppTheme.skyDeep,
+                color: _isLoading ? Colors.grey.shade400 : AppTheme.skyDeep,
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
@@ -321,11 +339,20 @@ class _SignupScreenState extends State<SignupScreen> {
                   )
                 ]
               ),
-              child: const Center(
-                 child: Text(
-                   '註冊',
-                   style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                 )
+              child: Center(
+                 child: _isLoading
+                   ? const SizedBox(
+                       height: 20,
+                       width: 20,
+                       child: CircularProgressIndicator(
+                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                         strokeWidth: 2,
+                       ),
+                     )
+                   : const Text(
+                       '註冊',
+                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                     )
               ),
             ),
           ),
