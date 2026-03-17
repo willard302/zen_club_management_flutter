@@ -3,9 +3,18 @@ import 'package:provider/provider.dart';
 import 'package:app/theme/app_theme.dart';
 import 'package:app/providers/user_provider.dart';
 import 'package:app/constants/app_routes.dart';
+import 'dart:math';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  // 底部導覽列當前選擇索引 (個人: 3)
+  int _currentIndex = 3;
 
   Future<void> _handleSignOut(BuildContext context) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -22,7 +31,7 @@ class SettingsScreen extends StatelessWidget {
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('登出失败: $e')),
+        SnackBar(content: Text('登出失敗: $e')),
       );
     }
   }
@@ -30,278 +39,462 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundLight,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top - MediaQuery.of(context).padding.bottom,
+      backgroundColor: const Color(0xFFF2F6FC), // 畫面整體淡藍灰底色
+      body: Stack(
+        children: [
+          // 上半部天空藍漸層背景
+          Container(
+            height: 280,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF65B6FF), Color(0xFF4FA5FF)],
+              ),
             ),
-            child: Column(
+          ),
+          
+          SafeArea(
+            bottom: false,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Column(
+                children: [
+                  _buildAppBar(),
+                  const SizedBox(height: 20),
+                  _buildProfileSection(context),
+                  const SizedBox(height: 16),
+                  _buildStatsSection(),
+                  const SizedBox(height: 24),
+                  _buildSettingsSection(context),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  // 頂部導覽列
+  Widget _buildAppBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Icon(Icons.menu, color: Colors.white, size: 28),
+          const Text(
+            '個人資料',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          // 右側圓形裝飾 Icon (模擬圖中的紅白圈)
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white.withOpacity(0.8), width: 2),
+            ),
+            child: Center(
+              child: Container(
+                width: 14,
+                height: 14,
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFF5252),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 個人資料卡片區塊
+  Widget _buildProfileSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          // 白色卡片本體
+          Container(
+            margin: const EdgeInsets.only(top: 55),
+            padding: const EdgeInsets.only(top: 70, bottom: 24, left: 24, right: 24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 15,
+                  offset: const Offset(0, 5),
+                )
+              ],
+            ),
+            child: Consumer<UserProvider>(
+              builder: (context, user, child) {
+                return Column(
+                  children: [
+                    Text(
+                      user.name.isNotEmpty ? user.name : '陳大文',
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2C3E50),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // 標籤區
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildBadge('核心成員', const Color(0xFFE3F2FD), const Color(0xFF1976D2)),
+                        const SizedBox(width: 8),
+                        _buildBadge('財務長', const Color(0xFFFFF8E1), const Color(0xFFF57F17)),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    // 虛線分隔線 (簡單用實線或極淡灰線代替)
+                    Divider(color: Colors.grey.shade200, thickness: 1),
+                    const SizedBox(height: 16),
+                    // 學系與學號
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildInfoColumn('學系', '資訊工程學系'),
+                        _buildInfoColumn('學號', '410012345', crossAxisAlignment: CrossAxisAlignment.end),
+                      ],
+                    )
+                  ],
+                );
+              },
+            ),
+          ),
+          
+          // 大頭貼與虛線外框
+          Container(
+            width: 110,
+            height: 110,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
               children: [
-                _buildHeaderAndProfile(context),
-                _buildSettingsList(context),
+                // 畫虛線圓框
+                SizedBox(
+                  width: 104,
+                  height: 104,
+                  child: CustomPaint(
+                    painter: DashedCirclePainter(),
+                  ),
+                ),
+                // 大頭貼圖片
+                const CircleAvatar(
+                  radius: 44,
+                  backgroundColor: Colors.grey,
+                  backgroundImage: NetworkImage(
+                      'https://i.pravatar.cc/150?img=11'), // 替換為您的圖片資產或 UserImage
+                ),
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBadge(String text, Color bgColor, Color textColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 13,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
 
-  Widget _buildHeaderAndProfile(BuildContext context) {
-    return Stack(
-      clipBehavior: Clip.none,
+  Widget _buildInfoColumn(String label, String value, {CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start}) {
+    return Column(
+      crossAxisAlignment: crossAxisAlignment,
       children: [
-        _buildSkyGradientHeader(context),
-        Positioned(
-           top: 80, 
-           left: 0,
-           right: 0,
-           child: _buildProfileCard(context)
-        )
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.grey,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Color(0xFF2C3E50),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildSkyGradientHeader(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 16, bottom: 90, left: 24, right: 24),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [AppTheme.skyBlue, Color(0xFF38BDF8)],
-        ),
-      ),
+  // 統計數據雙卡片區塊
+  Widget _buildStatsSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const SizedBox(width: 40), // Placeholder to maintain centered title
-          const Text(
-            '設定',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.timer_outlined,
+              title: '總禪定時數',
+              value: '42.5h',
             ),
           ),
-          const SizedBox(width: 40),
+          const SizedBox(width: 16),
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.calendar_today_outlined,
+              title: '本月打卡',
+              value: '12次',
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildProfileCard(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xFF0C4A6E).withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            )
-          ]
-        ),
-        child: Consumer<UserProvider>(
-          builder: (context, user, child) {
-            return Column(
-              children: [
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    Container(
-                      width: 96, height: 96,
-                      decoration: BoxDecoration(
-                         color: AppTheme.skyLight.withValues(alpha: 0.8),
-                         shape: BoxShape.circle,
-                         border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 4),
-                      ),
-                      child: const Icon(Icons.person, color: AppTheme.skyBlue, size: 48),
-                    ),
-                    Positioned(
-                       bottom: 0, right: 0,
-                       child: Container(
-                         width: 32, height: 32,
-                         decoration: BoxDecoration(
-                           color: AppTheme.skyBlue,
-                           shape: BoxShape.circle,
-                           border: Border.all(color: Colors.white, width: 2),
-                         ),
-                         child: const Icon(Icons.edit, color: Colors.white, size: 14),
-                       )
-                    )
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  user.name.isNotEmpty ? user.name : '使用者',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textDark,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  user.role,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppTheme.skyBlue,
-                  ),
-                )
-              ],
-            );
-          }
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsList(BuildContext context) {
+  Widget _buildStatCard({required IconData icon, required String title, required String value}) {
     return Container(
-      margin: const EdgeInsets.only(top: 120),
-      color: AppTheme.backgroundLight,
-      padding: const EdgeInsets.only(left: 24, right: 24, bottom: 100),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildSectionTitle('帳號設定'),
-          _buildSettingsGroup([
-            _buildSettingItem(
-              Icons.person_outline, 
-              '個人資訊', 
-              true, 
-              null,
-              onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
-            ),
-            _buildSettingItem(Icons.notifications_none, '通知', true, null),
-            _buildSettingItem(Icons.lock_open, '隱私與安全', true, null),
-          ]),
-          const SizedBox(height: 32),
-          _buildSectionTitle('應用程式體驗'),
-          _buildSettingsGroup([
-            _buildSettingItem(
-              Icons.palette, 
-              '主題偏好', 
-              false, 
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: AppTheme.skyLight.withValues(alpha: 0.5),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text('湛藍天空', style: TextStyle(color: Color(0xFF0284C7), fontSize: 12, fontWeight: FontWeight.w600)),
-              )
-            ),
-            _buildSettingItem(Icons.language, '語言', true, null),
-          ]),
-          const SizedBox(height: 32),
-          _buildSignOutButton(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8, bottom: 16),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: AppTheme.skyBlue,
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 2,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingsGroup(List<Widget> items) {
-    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Column(
-         children: items,
+        children: [
+          Icon(icon, color: const Color(0xFF5C93CC), size: 28),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Color(0xFF3898E5), // 亮藍色
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSettingItem(IconData icon, String title, bool hasChevron, Widget? trailing, {VoidCallback? onTap}) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: AppTheme.skyLight.withValues(alpha: 0.5), width: 0.5)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 40, height: 40,
-                    decoration: BoxDecoration(
-                      color: AppTheme.skyLight.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(icon, color: AppTheme.skyBlue, size: 22),
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 16,
-                    ),
-                  )
-                ],
+  // 帳戶設定列表區塊
+  Widget _buildSettingsSection(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 12),
+            child: Text(
+              '帳戶設定',
+              style: TextStyle(
+                color: Color(0xFF5F7285),
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
-              if (trailing != null) trailing
-              else if (hasChevron) Icon(Icons.chevron_right, color: Colors.grey.shade300)
-            ],
+            ),
           ),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.03),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                )
+              ],
+            ),
+            child: Column(
+              children: [
+                _buildSettingItem(
+                  icon: Icons.person_outline,
+                  title: '編輯個人資料',
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.profile),
+                ),
+                _buildSettingItem(
+                  icon: Icons.history,
+                  title: '修改密碼',
+                  onTap: () {},
+                ),
+                _buildSettingItem(
+                  icon: Icons.shield_outlined,
+                  title: '隱私權設定',
+                  onTap: () {},
+                ),
+                _buildSettingItem(
+                  icon: Icons.logout_outlined,
+                  title: '登出',
+                  isDestructive: true,
+                  showChevron: false,
+                  onTap: () => _handleSignOut(context),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingItem({
+    required IconData icon,
+    required String title,
+    bool isDestructive = false,
+    bool showChevron = true,
+    required VoidCallback onTap,
+  }) {
+    final color = isDestructive ? const Color(0xFFE57373) : const Color(0xFF6B7B8C);
+    
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 24),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: color,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            if (showChevron)
+              Icon(Icons.chevron_right, color: Colors.grey.shade400),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSignOutButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: OutlinedButton(
-        onPressed: () => _handleSignOut(context),
-        style: OutlinedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          side: BorderSide(color: Colors.red.shade100),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)
+  // 底部導覽列
+  Widget _buildBottomNavigationBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color(0xFF4FA5FF),
+        unselectedItemColor: Colors.grey.shade400,
+        selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+        elevation: 0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_filled),
+            label: '首頁',
           ),
-          foregroundColor: Colors.red.shade500
-        ),
-        child: Text(
-          '登出',
-          style: TextStyle(
-            color: Colors.red.shade500,
-            fontWeight: FontWeight.bold,
-            fontSize: 14,
+          BottomNavigationBarItem(
+            icon: Icon(Icons.menu_book),
+            label: '帳簿',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month),
+            label: '行事曆',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle),
+            label: '個人',
+          ),
+        ],
       ),
     );
   }
+}
+
+// 繪製大頭貼虛線外框的 CustomPainter
+class DashedCirclePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    double strokeWidth = 3.5;
+    double radius = (size.width - strokeWidth) / 2;
+    Offset center = Offset(size.width / 2, size.height / 2);
+    
+    Paint paint = Paint()
+      ..color = const Color(0xFF81C1FB) // 淺藍色虛線
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+
+    double dashWidth = 8.0;
+    double dashSpace = 6.0;
+    double circumference = 2 * pi * radius;
+    int dashCount = (circumference / (dashWidth + dashSpace)).floor();
+
+    double anglePerDash = (dashWidth + dashSpace) / radius;
+    
+    for (int i = 0; i < dashCount; i++) {
+      double startAngle = i * anglePerDash;
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        startAngle,
+        dashWidth / radius,
+        false,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

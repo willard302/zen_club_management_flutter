@@ -219,6 +219,19 @@ class SupabaseService {
     required String userId,
     String? name,
     String? role,
+    String? email,
+    String? phone,
+    String? gender,
+    String? department,
+    String? grade,
+    DateTime? birthday,
+    String? avatarUrl,
+    String? lineId,
+    String? instagram,
+    String? hierarchy,
+    String? clubRole,
+    String? clubGroup,
+    String? inviter,
   }) async {
     try {
       final updates = <String, dynamic>{
@@ -227,6 +240,19 @@ class SupabaseService {
 
       if (name != null) updates['name'] = name;
       if (role != null) updates['role'] = role;
+      if (email != null) updates['email'] = email;
+      if (phone != null) updates['phone'] = phone;
+      if (gender != null) updates['gender'] = gender;
+      if (department != null) updates['department'] = department;
+      if (grade != null) updates['grade'] = grade;
+      if (birthday != null) updates['birthday'] = birthday.toIso8601String();
+      if (avatarUrl != null) updates['avatar_url'] = avatarUrl;
+      if (lineId != null) updates['line_id'] = lineId;
+      if (instagram != null) updates['instagram'] = instagram;
+      if (hierarchy != null) updates['hierarchy'] = hierarchy;
+      if (clubRole != null) updates['club_role'] = clubRole;
+      if (clubGroup != null) updates['club_group'] = clubGroup;
+      if (inviter != null) updates['inviter'] = inviter;
 
       final response = await _client
           .from('users')
